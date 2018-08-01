@@ -7,7 +7,7 @@
         </div>
       </div>
       <div class="price">￥0</div><div class="description">另需配送费￥4元</div>
-    </div><div class="shopcart-right"></div>
+    </div><div class="shopcart-right">￥20起送</div>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -25,9 +25,6 @@
     z-index: 10
     .shopcart-left
       flex: 1
-      font-size: 16px
-      font-weight: 700
-      line-height: 24px
       .icon-wrapper
         display: inline-block
         position: relative
@@ -35,6 +32,9 @@
         width: 58px
         height: 58px
         margin-top: -10px
+        font-size: 16px
+        font-weight: 700
+        line-height: 24px
         background-color: #141d27
         border-radius: 50%
         z-index: 50
@@ -56,6 +56,7 @@
             line-height: 24px
       .price
         display: inline-block
+        margin-top: 5.5px
         padding: 11px 0 12px 18px
         vertical-align: top
         color: #919396
@@ -66,10 +67,15 @@
           content: ''
       .description
         display: inline-block
+        margin-top: 5.5px
         padding: 11px 0 12px 12px
         vertical-align: top
         color: #6c7177
     .shopcart-right
       flex: 0 0 105px
+      text-align: center
+      line-height: 47px
+      font-size: 12px
+      color: rgba(255, 255, 255, .4)
       background: #2b333b
 </style>
