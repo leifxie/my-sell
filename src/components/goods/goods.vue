@@ -31,6 +31,9 @@
                 <div class="price-wrapper">
                   <span class="price">￥{{food.price}}</span>
                   <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                  <div class="carnumber">
+                    <carnumber></carnumber>
+                  </div>
                 </div>
               </div>
             </li>
@@ -44,6 +47,7 @@
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
   import shopcart from '../../components/shopcart/shopcart';
+  import carnumber from '../../components/carnumber/carnumber';
   const ERR_OK = 0;
   export default {
     data () {
@@ -52,7 +56,8 @@
         scrollHeights: [],
         scrollY: 0,
         menuScroll: {},
-        foodsScroll: {}
+        foodsScroll: {},
+        num: 0
       };
     },
     computed: {
@@ -111,7 +116,8 @@
       }
     },
     components: {
-      'shopcart': shopcart
+      'shopcart': shopcart,
+      'carnumber': carnumber
     }
   };
 </script>
@@ -224,4 +230,7 @@
               .oldPrice
                 font-size: 10px
                 text-decoration: line-through
+              .carnumber
+                display: inline-block
+                float: right
 </style>
