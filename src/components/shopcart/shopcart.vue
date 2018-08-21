@@ -2,16 +2,67 @@
   <div class="shopcart">
     <div class="shopcart-left">
       <div class="icon-wrapper">
-        <div class="icon-background">
+        <div class="icon-background" :class="{'highlight': totalCount > 0}">
           <span class="icon-shopping_cart"></span>
         </div>
       </div>
-      <div class="price">￥0</div><div class="description">另需配送费￥4元</div>
-    </div><div class="shopcart-right">￥20起送</div>
+      <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div><div class="description">另需配送费￥4元</div>
+      <div class="ball-container" v-for="ball in balls">
+        <div class="ball" transition="ball-move" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter" v-show="ball.show">
+          <div class="inner"></div>
+        </div>
+      </div>
+    </div><div class="shopcart-right" :class="{'highlight': totalPrice >= 20}">￥20起送</div>
   </div>
 </template>
 <script type="text/ecmascript-6">
-  export default {};
+  export default {
+    data () {
+      return {
+        balls: [
+          {show: false},
+          {show: false},
+          {show: false},
+          {show: false},
+          {show: false}
+        ],
+        dropBalls: []
+      };
+    },
+    computed: {
+      totalPrice () {
+        let price = 0;
+        return price;
+      },
+      totalCount () {
+        let count = 0;
+        return count;
+      }
+    },
+    methods: {
+      drop (target) {
+        let balls = this.balls;
+        for (let i = 0; i < balls.length; i++) {
+          let ball = balls[i];
+          if (!ball.show) {
+            ball.show = true;
+            ball.el = target; // 这一句的作用是什么？
+            this.dropBalls.push(ball); // 每点击一次只放入一个小球进dropBalls数组中
+            return;
+          }
+        }
+      },
+      beforeEnter (target) {
+        console.log(target);
+      },
+      enter (target) {
+        console.log(target);
+      },
+      afterEnter (target) {
+        console.log(target);
+      }
+    }
+  };
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
   .shopcart
@@ -45,6 +96,9 @@
           margin: 6px 0 0 6.5px
           background-color: #2b343c
           border-radius: 50%
+          &.highlight
+            background-color: rgb(0, 160, 220)
+            color: #fff
           .icon-shopping_cart
             position: absolute
             top: 50%
@@ -60,11 +114,15 @@
         padding: 11px 0 12px 18px
         vertical-align: top
         color: #919396
+        &.highlight
+          color: #fff
         &:after
           border-left: 1px solid rgba(255, 255, 255, .1)
           height: 30px
           margin: 0 0 0 12px
           content: ''
+      .ball-container
+              
       .description
         display: inline-block
         margin-top: 5.5px
@@ -78,4 +136,6 @@
       font-size: 12px
       color: rgba(255, 255, 255, .4)
       background: #2b333b
+      &.highlight 
+        background-color: #00b43c
 </style>

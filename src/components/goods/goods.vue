@@ -32,7 +32,7 @@
                   <span class="price">￥{{food.price}}</span>
                   <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   <div class="carnumber">
-                    <carnumber></carnumber>
+                    <carnumber :food="food"></carnumber>
                   </div>
                 </div>
               </div>
@@ -41,7 +41,7 @@
         </li>
       </ul>
     </div>
-    <shopcart></shopcart>
+    <shopcart v-ref:shopcart></shopcart>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -113,11 +113,22 @@
         let foodsList = this.$els.foodsWrapper.querySelectorAll('.food-item-hook');
         let $el = foodsList[index];
         this.foodsScroll.scrollToElement($el, 250);
+      },
+      _drop (target) {
+        this.$nextTick(() => {
+          this.$refs.shopcart.drop(target);
+        });
       }
     },
     components: {
       'shopcart': shopcart,
       'carnumber': carnumber
+    },
+    events: {
+      'cart_add' (target) {
+        console.log('1234');
+        this._drop(target);
+      }
     }
   };
 </script>
