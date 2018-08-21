@@ -5,18 +5,35 @@
         <div class="icon-background" :class="{'highlight': totalCount > 0}">
           <span class="icon-shopping_cart"></span>
         </div>
+        <div class="count">1</div>
       </div>
-      <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div><div class="description">另需配送费￥4元</div>
+      <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div><div class="description">另需配送费￥{{deliveryPrice}}元</div>
       <div class="ball-container" v-for="ball in balls">
         <div class="ball" transition="ball-move" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter" v-show="ball.show">
           <div class="inner"></div>
         </div>
       </div>
-    </div><div class="shopcart-right" :class="{'highlight': totalPrice >= 20}">￥20起送</div>
+    </div><div class="shopcart-right" :class="{'highlight': totalPrice >= 20}">￥{{minPrice}}起送</div>
   </div>
 </template>
 <script type="text/ecmascript-6">
   export default {
+    props: {
+      deliveryPrice: {
+        type: Number,
+        default: 0
+      },
+      minPrice: {
+        type: Number,
+        default: 0
+      },
+      selectedFoods: {
+        type: Array,
+        default () {
+          return []; // 在vue中,父组件传入给子组件的属性如果类型为array或者object,默认值用函数表示。
+        }
+      }
+    },
     data () {
       return {
         balls: [
@@ -108,6 +125,22 @@
             font-size: 24px
             color: rgb(255, 255, 255, .4)
             line-height: 24px
+        .count
+          display: inline-block
+          position: absolute
+          top: 2px
+          left: 36px
+          width: 24px
+          height: 16x
+          line-height: 16px
+          text-align: center
+          font-size: 9px
+          font-weight: 700
+          color: rgb(255, 255, 255)
+          background: red
+          border-radius: 12px
+          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4)
+          z-index: 99
       .price
         display: inline-block
         margin-top: 5.5px
@@ -122,7 +155,7 @@
           margin: 0 0 0 12px
           content: ''
       .ball-container
-              
+
       .description
         display: inline-block
         margin-top: 5.5px
@@ -136,6 +169,6 @@
       font-size: 12px
       color: rgba(255, 255, 255, .4)
       background: #2b333b
-      &.highlight 
+      &.highlight
         background-color: #00b43c
 </style>

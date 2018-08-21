@@ -41,7 +41,7 @@
         </li>
       </ul>
     </div>
-    <shopcart v-ref:shopcart></shopcart>
+    <shopcart v-ref:shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -50,6 +50,11 @@
   import carnumber from '../../components/carnumber/carnumber';
   const ERR_OK = 0;
   export default {
+    props: {
+      seller: {
+        type: Object
+      }
+    },
     data () {
       return {
         goods: [],
