@@ -41,7 +41,7 @@
         </li>
       </ul>
     </div>
-    <shopcart v-ref:shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart v-ref:shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :selected-foods="selectedFoods"></shopcart>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -61,8 +61,7 @@
         scrollHeights: [],
         scrollY: 0,
         menuScroll: {},
-        foodsScroll: {},
-        num: 0
+        foodsScroll: {}
       };
     },
     computed: {
@@ -76,6 +75,17 @@
           }
         }
         return 0;
+      },
+      selectedFoods () {
+        let selectedFoods = [];
+        this.goods.forEach(function (good) {
+          good.foods.forEach(function (food) {
+            if (food.num) {
+              selectedFoods.push(food);
+            }
+          });
+        });
+        return selectedFoods;
       }
     },
     created () {
@@ -120,6 +130,7 @@
         this.foodsScroll.scrollToElement($el, 250);
       },
       _drop (target) {
+        // 优化体验，异步执行动画
         this.$nextTick(() => {
           this.$refs.shopcart.drop(target);
         });
@@ -131,7 +142,6 @@
     },
     events: {
       'cart_add' (target) {
-        console.log('1234');
         this._drop(target);
       }
     }
