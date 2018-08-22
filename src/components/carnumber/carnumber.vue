@@ -58,7 +58,7 @@
       height: 24px
       font-size: 24px
       color: rgb(0, 160, 220)
-    .num 
+    .num
       display: inline-block
       position: relative
       top: -4px

@@ -8,10 +8,10 @@
         <div class="count" v-show="totalCount > 0">{{totalCount}}</div>
       </div>
       <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div><div class="description">另需配送费￥{{deliveryPrice}}元</div>
-      
+
     </div><div class="shopcart-right" :class="{'highlight': totalPrice >= minPrice}">{{payStatus}}</div>
-    <div class="ball-container" v-for="ball in balls">
-      <div class="ball" transition="ball-move" v-show="ball.show">
+    <div class="ball-wrapper">
+      <div transition="drop" class="ball" v-for="ball in balls" v-show="ball.show">
         <div class="inner inner-hook"></div>
       </div>
     </div>
@@ -72,46 +72,6 @@
         }
       }
     },
-    transitions: {
-      ballMove: {
-        beforeEnter (el) {
-          console.log(el);
-          let count = this.balls.length;
-          while (count--) {
-            let ball = this.balls[count];
-            if (ball.show) {
-              let rect = ball.el.getBoundingClientRect();// 获取增加按钮相对于视口的位移。
-              let x = rect.x - 40; // 水平距离
-              let y = -(window.innerHeight - rect.y - 22);// y是负数，因为左上角的小球相对于静止小球的y值为负
-              el.style.display = '';
-              el.style.webkitTransform = `translate3d(0, ${y}px,0)`; // 外层控制纵向移动
-              el.style.transform = `translate3d(0, ${y}px, 0)`;
-              let inner = el.getElementsByClassName('inner-hook')[0]; // 取到小球的内层元素,内层控制横向移动
-              inner.style.webkitTransform = `translate3d(${x}px, 0, 0)`;
-              inner.style.transform = `translate3d(${x}px, 0, 0)`;
-            }
-          }
-        },
-        enter (el) {
-          // console.log(el);
-          /* eslint-disable no-unused-vars */
-          let rf = el.offsetHeight; // 手动触发重绘html
-          el.style.webkitTransform = 'translate3d(0, 0, 0)';
-          el.style.transform = 'translate3d(0, 0, 0)';
-          let inner = el.getElementsByClassName('inner-hook')[0];
-          inner.style.webkitTransform = 'translate3d(0, 0, 0)';
-          inner.style.transform = 'translate3d(0, 0, 0)';
-        },
-        afterEnter (el) {
-          // console.log(el);
-          let ball = this.dropBalls.shift();
-          if (ball) {
-            ball.show = true;
-            el.style.display = 'none';
-          }
-        }
-      }
-    },
     methods: {
       drop (target) {
         let balls = this.balls;
@@ -122,6 +82,45 @@
             ball.el = target;
             this.dropBalls.push(ball); // 每点击一次只放入一个小球进dropBalls数组中
             return;
+          }
+        }
+      }
+    },
+    transitions: {
+      drop: {
+        beforeEnter (el) {
+          let count = this.balls.length;
+          while (count--) {
+            let ball = this.balls[count];
+            if (ball.show) {
+              let rect = ball.el.getBoundingClientRect();
+              let x = rect.left - 40;
+              let y = -(window.innerHeight - rect.top - 22);
+              el.style.display = '';
+              el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+              el.style.transform = `translate3d(0,${y}px,0)`;
+              let inner = el.getElementsByClassName('inner-hook')[0];
+              inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
+              inner.style.transform = `translate3d(${x}px,0,0)`;
+            }
+          }
+        },
+        enter (el) {
+          /* eslint-disable no-unused-vars */
+          let rf = el.offsetHeight;
+          this.$nextTick(() => {
+            el.style.webkitTransform = 'translate3d(0,0,0)';
+            el.style.transform = 'translate3d(0,0,0)';
+            let inner = el.getElementsByClassName('inner-hook')[0];
+            inner.style.webkitTransform = 'translate3d(0,0,0)';
+            inner.style.transform = 'translate3d(0,0,0)';
+          });
+        },
+        afterEnter (el) {
+          let ball = this.dropBalls.shift();
+          if (ball) {
+            ball.show = false;
+            el.style.display = 'none';
           }
         }
       }
@@ -216,18 +215,20 @@
       background: #2b333b
       &.highlight
         background-color: #00b43c
-    .ball-container
+    .ball-wrapper
       .ball
+        display: inline-block
         position: fixed
         left: 40px
         bottom: 22px
-        z-index: 999
-        &.ball-move-transition
-          transition: all 0.4s cubic-bezier(.84,-0.38,.93,.9)
-        .inner
-          width: 16px
-          height: 16px
-          border-radius: 50%
-          background: rgb(0, 160, 220)
-          transition: all 0.4s linear
+        z-index: 500
+        &.drop-transition
+          transition: all 0.4s cubic-bezier(.74,-0.58,.74,.55)
+          .inner
+            width: 16px
+            height: 16px
+            border-radius: 50%
+            background: rgb(0, 160, 220)
+            transition: all 0.4s linear
+
 </style>
