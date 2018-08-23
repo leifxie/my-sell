@@ -137,8 +137,8 @@
       }
     },
     components: {
-      'shopcart': shopcart,
-      'carnumber': carnumber
+      shopcart,
+      carnumber
     },
     events: {
       'cart_add' (target) {

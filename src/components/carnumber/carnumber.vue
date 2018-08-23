@@ -15,12 +15,13 @@
         type: Object
       }
     },
-    created () {
-      Vue.set(this.food, 'num', 0);
-    },
     methods: {
       incNum (event) {
-        this.food.num++;
+        if (!this.food.num) {
+          Vue.set(this.food, 'num', 1);
+        } else {
+          this.food.num++;
+        }
         this.$dispatch('cart_add', event.target); /* 通知父组件, 触发小球动画 */
       },
       decNum () {
