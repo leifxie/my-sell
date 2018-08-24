@@ -10,7 +10,6 @@
             <div class="count" v-show="totalCount > 0">{{totalCount}}</div>
           </div>
           <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div><div class="description">另需配送费￥{{deliveryPrice}}元</div>
-
         </div><div class="shopcart-right" :class="{'highlight': totalPrice >= minPrice}" @click.stop="pay">{{payStatus}}</div>
         <div class="ball-wrapper">
           <div transition="drop" class="ball" v-for="ball in balls" v-show="ball.show">
@@ -110,7 +109,6 @@
               probeType: 3,
               click: true
             });
-            console.log(this.contentWrapper);
           } else {
             this.contentWrapper.refresh();
           }

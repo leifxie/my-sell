@@ -1,53 +1,58 @@
 <template>
   <div class="goods">
-    <div class="menu-wrapper" v-el:menu-wrapper>
-      <ul class="menu">
-        <li v-for="item in goods" track-by="$index" class="menu-item" :class="{ scrollActive: scrollIndex === $index}"
-        @click="showFoods($index)">
-          <span class="text">
-            <span v-if="item.type >= 0" :class="classMap[item.type]" class="icon"></span>
-          {{item.name}}
-          </span>
-        </li>
-      </ul>
-    </div>
-    <div class="foods-wrapper" v-el:foods-wrapper>
-      <ul>
-        <li v-for="item in goods" class="foods-item food-item-hook">
-          <h1 class="title">{{item.name}}</h1>
-          <ul>
-            <li class="foods" v-for="food in item.foods">
-              <div class="icon-wrapper">
-                <img :src="food.icon" class="icon" width="60" height="60"/>
-              </div>
-              <div class="content">
-                <h1 class="content-title">{{food.name}}</h1>
-                <div v-show="food.description" class="description">
-                  {{food.description}}
+    <div class="goods-wrapper">
+      <div class="menu-wrapper" v-el:menu-wrapper>
+        <ul class="menu">
+          <li v-for="item in goods" track-by="$index" class="menu-item" :class="{ scrollActive: scrollIndex === $index}"
+          @click="showFoods($index)">
+            <span class="text">
+              <span v-if="item.type >= 0" :class="classMap[item.type]" class="icon"></span>
+            {{item.name}}
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div class="foods-wrapper" v-el:foods-wrapper>
+        <ul>
+          <li v-for="item in goods" class="foods-item food-item-hook">
+            <h1 class="title">{{item.name}}</h1>
+            <ul>
+              <li class="foods" v-for="food in item.foods" @click="selectFood(food)">
+                <div class="icon-wrapper">
+                  <img :src="food.icon" class="icon" width="60" height="60"/>
                 </div>
-                <div class="rating">
-                    <span class="counts">月售{{food.sellCount}}份</span><span>好评率{{food.rating}}%</span>
-                </div>
-                <div class="price-wrapper">
-                  <span class="price">￥{{food.price}}</span>
-                  <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
-                  <div class="carnumber">
-                    <carnumber :food="food"></carnumber>
+                <div class="content">
+                  <h1 class="content-title">{{food.name}}</h1>
+                  <div v-show="food.description" class="description">
+                    {{food.description}}
+                  </div>
+                  <div class="rating">
+                      <span class="counts">月售{{food.sellCount}}份</span><span>好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="price-wrapper">
+                    <span class="price">￥{{food.price}}</span>
+                    <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                    <div class="carnumber">
+                      <carnumber :food="food"></carnumber>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <shopcart v-ref:shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :selected-foods="selectedFoods"></shopcart>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <shopcart v-ref:shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :selected-foods="selectedFoods"></shopcart>
+    </div> 
+    <food :food="foodDetail" v-ref:food></food>
   </div>
+  
 </template>
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
   import shopcart from '../../components/shopcart/shopcart';
   import carnumber from '../../components/carnumber/carnumber';
+  import food from '../../components/food/food';
   const ERR_OK = 0;
   export default {
     props: {
@@ -61,7 +66,8 @@
         scrollHeights: [],
         scrollY: 0,
         menuScroll: {},
-        foodsScroll: {}
+        foodsScroll: {},
+        foodDetail: {}
       };
     },
     computed: {
@@ -134,11 +140,17 @@
         this.$nextTick(() => {
           this.$refs.shopcart.drop(target);
         });
+      },
+      selectFood (food) {
+        console.log(food);
+        this.foodDetail = food;
+        this.$refs.food.show();
       }
     },
     components: {
       shopcart,
-      carnumber
+      carnumber,
+      food
     },
     events: {
       'cart_add' (target) {
@@ -150,113 +162,114 @@
 <style lang="stylus" rel="stylesheet/stylus">
   @import '../../common/stylus/mixin.styl'
   .goods
-    display: flex
-    position: absolute
-    top: 174px
-    bottom: 46px
-    width: 100%
-    overflow: hidden
-    .menu-wrapper
-      flex: 0 0 80px
-      width: 80px
-      background-color: #f3f5f7
-      .menu
-        .menu-item
-          position: relative
-          display: table
-          width: 80px
-          height: 54px
-          font-weight: 200
-          &.scrollActive
-            margin-top: -1px
-            z-index: 10
-            font-weight: 700
-            background-color: white
-            border-none()
-          &:after
-            position: absolute
-            bottom: 0
-            left: 10px
-            content: ""
-            width: 70%
-            border-top: 1px solid rgba(7, 17, 27, .1)
-          .text
-            display: table-cell
-            line-height: 14px
-            text-align: left
-            vertical-align: middle
-            padding: 0 12px
-            font-size: 12px
-            .icon
-              display: inline-block
-              width: 12px
-              height: 12px
-              margin-right: 1px
-              vertical-align: top
-              background-size: 12px 12px
-              background-repeat: no-repeat
-              &.decrease
-                bg-img('decrease_3')
-              &.discount
-                bg-img('discount_3')
-              &.guarantee
-                bg-img('guarantee_3')
-              &.invoice
-                bg-img('invoice_3')
-              &.special
-                bg-img('special_3')
-    .foods-wrapper
-      flex: 1
-      .foods-item
-        width: 100%
-        .title
-          width: 100%
-          height: 26px
-          padding-left: 14px
-          line-height: 26px
-          font-size: 12px
-          font-weight: 700
-          color: rgb(147, 153, 159)
-          background-color: #f3f5f7
-          border-left:2px solid #d9dde1
-        .foods
-          display: flex
-          margin: 18px 18px 0 18px
-          padding-bottom: 18px
-          border-1px(rgba(7, 17, 27, .1))
-          &:last-child
-            border-none()
-          .icon-wrapper
-            flex: 0 0 60px
-            width: 60px
-            height: 60px
-          .content
-            flex: 1
-            margin-left: 10px
-            font-size: 10px
-            color: rgb(147, 153, 159)
-            .content-title
-              margin-top: 2px
-              line-height: 14px
-              font-size: 14px
-              color: rgb(7, 17, 27)
-            .description
-              line-height: 14px
-              margin: 8px 0
-            .rating
-              margin: 8px 0 0 0
-              .counts
-                margin-right: 12px
-            .price-wrapper
+    .goods-wrapper
+      display: flex
+      position: absolute
+      top: 174px
+      bottom: 46px
+      width: 100%
+      overflow: hidden
+      .menu-wrapper
+        flex: 0 0 80px
+        width: 80px
+        background-color: #f3f5f7
+        .menu
+          .menu-item
+            position: relative
+            display: table
+            width: 80px
+            height: 54px
+            font-weight: 200
+            &.scrollActive
+              margin-top: -1px
+              z-index: 10
               font-weight: 700
-              line-height: 24px
-              .price
-                font-size: 14px
-                color: rgb(240, 20, 20)
-              .oldPrice
-                font-size: 10px
-                text-decoration: line-through
-              .carnumber
+              background-color: white
+              border-none()
+            &:after
+              position: absolute
+              bottom: 0
+              left: 10px
+              content: ""
+              width: 70%
+              border-top: 1px solid rgba(7, 17, 27, .1)
+            .text
+              display: table-cell
+              line-height: 14px
+              text-align: left
+              vertical-align: middle
+              padding: 0 12px
+              font-size: 12px
+              .icon
                 display: inline-block
-                float: right
+                width: 12px
+                height: 12px
+                margin-right: 1px
+                vertical-align: top
+                background-size: 12px 12px
+                background-repeat: no-repeat
+                &.decrease
+                  bg-img('decrease_3')
+                &.discount
+                  bg-img('discount_3')
+                &.guarantee
+                  bg-img('guarantee_3')
+                &.invoice
+                  bg-img('invoice_3')
+                &.special
+                  bg-img('special_3')
+      .foods-wrapper
+        flex: 1
+        .foods-item
+          width: 100%
+          .title
+            width: 100%
+            height: 26px
+            padding-left: 14px
+            line-height: 26px
+            font-size: 12px
+            font-weight: 700
+            color: rgb(147, 153, 159)
+            background-color: #f3f5f7
+            border-left:2px solid #d9dde1
+          .foods
+            display: flex
+            margin: 18px 18px 0 18px
+            padding-bottom: 18px
+            border-1px(rgba(7, 17, 27, .1))
+            &:last-child
+              border-none()
+            .icon-wrapper
+              flex: 0 0 60px
+              width: 60px
+              height: 60px
+            .content
+              flex: 1
+              margin-left: 10px
+              font-size: 10px
+              color: rgb(147, 153, 159)
+              .content-title
+                margin-top: 2px
+                line-height: 14px
+                font-size: 14px
+                color: rgb(7, 17, 27)
+              .description
+                line-height: 14px
+                margin: 8px 0
+              .rating
+                margin: 8px 0 0 0
+                .counts
+                  margin-right: 12px
+              .price-wrapper
+                font-weight: 700
+                line-height: 24px
+                .price
+                  font-size: 14px
+                  color: rgb(240, 20, 20)
+                .oldPrice
+                  font-size: 10px
+                  text-decoration: line-through
+                .carnumber
+                  display: inline-block
+                  float: right
 </style>
