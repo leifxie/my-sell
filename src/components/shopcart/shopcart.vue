@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="shopcart-mask" v-show="listShow" @click="hideList" transition="fade"></div>
-  </div> 
+  </div>
 </template>
 <script type="text/ecmascript-6">
   import carnumber from '../../components/carnumber/carnumber';
@@ -300,35 +300,36 @@
                 background: rgb(0, 160, 220)
                 transition: all 0.4s linear
       .shopcart-list
-        position: fixed 
+        position: fixed
         left: 0
-        bottom: 0 
+        bottom: 0
         width: 100%
         max-height: 305.5px
         padding-bottom: 47px
-        z-index: 10
+        z-index: 13
         box-sizing: border-box
         &.slide-transition
-          transition: all 0.6s linear 
+          transition: all 0.6s linear
           transform: translate3d(0, 0, 0)
         &.slide-enter, &.slide-leave
           transform: translate3d(0, 100%, 0)
-        .list-header  
+        .list-header
           position: relative
           width: 100%
-          height: 40px  
-          padding: 0 18px 
+          height: 40px
+          padding: 0 18px
           background: #f3f5f7
           box-sizing: border-box
           .title
             display: inline-block
             height: 40px
-            font-size: 200 14px
+            font-size: 14px
+            font-weight: 200
             color: rgb(7, 17, 27)
             line-height: 40px
           .reset
             display: inline-block
-            position: absolute 
+            position: absolute
             right: 18px
             height: 40px
             font-size: 12px
@@ -342,37 +343,38 @@
             width: 100%
             padding: 0 18px
             box-sizing: border-box
-            .list-item 
+            .list-item
               position: relative
               height: 48px
               border-1px(rgba(7, 17, 27, 0.1))
               .name
                 display: inline-block
                 height: 48px
-                font: 14px 
+                font: 14px
                 color: rgb(7, 17, 27)
                 line-height: 48px
               .price
                 display: inline-block
-                position: absolute 
+                position: absolute
                 right: 72px
                 height: 48px
                 margin: 0 12px 0 18px
                 line-height: 48px
                 color: rgb(240, 20, 20)
-                font: 700 14px
+                font-size: 14px
+                font-weight: 700
               .wrapper
                 display: inline-block
-                position: absolute 
+                position: absolute
                 right: 0
-                margin: 12px 0  
+                margin: 12px 0
     .shopcart-mask
       position: fixed
       top: 0
       left: 0
       width: 100%
       height: 100%
-      z-index: 1
+      z-index: 10
       background: rgba(7, 17, 27, 0.6)
       filter: blur(10px)
       transform: scale(1.2);

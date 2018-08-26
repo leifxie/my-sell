@@ -1,8 +1,8 @@
 <template>
   <div class="carnumber">
-    <span class="icon-add_circle" @click="incNum"></span>
+    <span class="icon-add_circle" @click.stop="incNum"></span>
     <div class="foodNum" v-show="food.num >= 1" transition="slide-fade">
-      <span class="inner icon-remove_circle_outline" @click="decNum"></span>
+      <span class="inner icon-remove_circle_outline" @click.stop="decNum"></span>
       <span class="num">{{food.num}}</span>
     </div>
   </div>

@@ -17,7 +17,7 @@
           <li v-for="item in goods" class="foods-item food-item-hook">
             <h1 class="title">{{item.name}}</h1>
             <ul>
-              <li class="foods" v-for="food in item.foods" @click="selectFood(food)">
+              <li class="item-foods" v-for="food in item.foods" @click.stop.prevent="selectFood(food, $event)">
                 <div class="icon-wrapper">
                   <img :src="food.icon" class="icon" width="60" height="60"/>
                 </div>
@@ -43,10 +43,10 @@
         </ul>
       </div>
       <shopcart v-ref:shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :selected-foods="selectedFoods"></shopcart>
-    </div> 
+    </div>
     <food :food="foodDetail" v-ref:food></food>
   </div>
-  
+
 </template>
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';
@@ -141,8 +141,7 @@
           this.$refs.shopcart.drop(target);
         });
       },
-      selectFood (food) {
-        console.log(food);
+      selectFood (food, event) {
         this.foodDetail = food;
         this.$refs.food.show();
       }
@@ -232,7 +231,7 @@
             color: rgb(147, 153, 159)
             background-color: #f3f5f7
             border-left:2px solid #d9dde1
-          .foods
+          .item-foods
             display: flex
             margin: 18px 18px 0 18px
             padding-bottom: 18px
