@@ -1,6 +1,6 @@
 <template>
   <div class="rating-select">
-    <div class="ratings border-1px">
+    <div class="rating-top border-1px">
       <span class="all" :class="{'active': selectType === 0}" @click.stop="chooseType(0)">{{desc.all}}<span class="num">{{ratings.length}}</span></span>
       <span class="positive" :class="{'active': selectType === 1}" @click.stop="chooseType(1)">{{desc.positive}}<span class="num">{{positive.length}}</span></span>
       <span class="negative" :class="{'active': selectType === 2}" @click.stop="chooseType(2)">{{desc.negative}}<span class="num">{{negative.length}}</span></span>
@@ -73,7 +73,7 @@
     width: 100%
     padding: 18px
     box-sizing: border-box
-    .ratings
+    .rating-top
       height: 60px
       font-size: 0
       &.border-1px
