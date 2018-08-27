@@ -39,7 +39,7 @@
         <ul class="rating-content" >
           <li class="rating-item border-1px" v-show="onlyContentRatings(rating.rateType, rating.text)" v-for="rating in food.ratings">
             <div class="user-info">
-              <span class="time">{{rating.rateTime}}</span><span class="username">{{rating.username}}</span><img class="avatar" width="12" height="12" :src="rating.avatar"></img>
+              <span class="time">{{rating.rateTime | format}}</span><span class="username">{{rating.username}}</span><img class="avatar" width="12" height="12" :src="rating.avatar"></img>
             </div>
             <div class="rating-info">
               <span class="icon-thumb_up" v-show="rating.rateType === 0"></span>
@@ -57,6 +57,7 @@
   import BScroll from 'better-scroll';
   import carnumber from '../../components/carnumber/carnumber';
   import ratingselect from '../../components/ratingselect/ratingselect';
+  import {formatDate} from '../../common/js/common';
   import split from '../../components/split/split';
   import Vue from 'vue';
   const ALL = 0;
@@ -79,6 +80,13 @@
         selectType: ALL,
         onlyContent: false
       };
+    },
+    filters: {
+      format (value) {
+        let time = new Date(value);
+        console.log(formatDate(time, 'yyyy-MM-dd hh:mm'));
+        return formatDate(time, 'yyyy-MM-dd hh:mm');
+      }
     },
     methods: {
       show () {
@@ -108,6 +116,14 @@
       },
       onlyContentRatings (type, text) {
         // rateType和text
+        if (this.selectType === 0) { // 选择了全部的时候
+          // 看的时候最好将三元运算符拆成if语句来理解逻辑，不然不太好理解，这是优化后的代码
+          return this.onlyContent ? (text ? 1 : 0) : 1;
+        } else if (this.selectType === 1) { // 选择了推荐的时候
+          return this.onlyContent ? ((!type && text) ? 1 : 0) : ((!type) ? 1 : 0);
+        } else if (this.selectType === 2) { // 选择了吐槽的时候
+          return this.onlyContent ? ((type && text) ? 1 : 0) : (type ? 1 : 0);
+        }
       }
     },
     events: {
@@ -286,4 +302,3 @@
       border-top: 1px solid rgba(7, 17, 27, 0.1)
       padding: 18px
 </style>
-height: 100%
