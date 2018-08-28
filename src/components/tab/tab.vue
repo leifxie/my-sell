@@ -20,7 +20,7 @@
   .tab
     display: flex
     align-items: center
-    width: 375px
+    width: 100%
     height: 40px
     border-1px(rgba(7, 17, 27, .1))
     .tab-item

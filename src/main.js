@@ -29,5 +29,3 @@ router.map({
 
 router.start(app, '#app');
 /* eslint-disable no-new */
-
-router.go('/goods');

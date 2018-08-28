@@ -13,8 +13,6 @@
 </template>
 <script type="text/ecmascript-6">
   const ALL = 0;
-//  const POSITIVE = 1;
-//  const NEGATIVE = 2;
   export default {
     props: {
       desc: {

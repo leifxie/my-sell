@@ -61,8 +61,6 @@
   import split from '../../components/split/split';
   import Vue from 'vue';
   const ALL = 0;
-//  const POSITIVE = 1;
-//  const NEGATIVE = 2;
   export default {
     props: {
       food: {
@@ -84,7 +82,6 @@
     filters: {
       format (value) {
         let time = new Date(value);
-        console.log(formatDate(time, 'yyyy-MM-dd hh:mm'));
         return formatDate(time, 'yyyy-MM-dd hh:mm');
       }
     },
