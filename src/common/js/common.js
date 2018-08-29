@@ -21,3 +21,18 @@ export function formatDate (date, fmt) {
   return fmt;
 }
 
+export function urlParse () {
+  let param = {};
+  let url = window.location.search;
+  let reg = /[?&][^?&]+=[^?&]+/g;
+  let result = url.match(reg);
+  if (result) {
+    result.forEach((item) => {
+      let str = item.substr(1);
+      let key = decodeURIComponent(str.split('=')[0]);
+      let val = decodeURIComponent(str.split('=')[1]);
+      param[key] = val;
+    });
+  }
+  return param;
+}
