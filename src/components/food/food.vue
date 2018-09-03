@@ -1,57 +1,61 @@
 <template>
-  <div class="food" v-show="isShow" v-el:food transition="fade">
-    <div food-content>
-      <div class="food-image">
-        <img :src="food.image" alt="食品头图" class="img"/>
-      </div>
-      <span class="icon-arrow_lift" @click.stop="back()"></span>
-      <div class="description">
-        <div class="name">{{food.name}}</div>
-        <div class="desc">
-          <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
+  <transition name="fade">
+    <div class="food" v-show="isShow" ref="food">
+      <div food-content>
+        <div class="food-image">
+          <img :src="food.image" alt="食品头图" class="img"/>
         </div>
-        <div class="wrapper">
-          <span class="price">￥{{food.price}}</span>
-          <span class="old-price" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
-          <div class="carnumber-wrapper" v-show=" food.num > 0">
-            <carnumber :food="food"></carnumber>
+        <span class="icon-arrow_lift" @click.stop="back()"></span>
+        <div class="description">
+          <div class="name">{{food.name}}</div>
+          <div class="desc">
+            <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
           </div>
-          <div class="add-food-wrapper" @click="_addFoodToCart" v-show="food.num === 0 || !food.num" transition="disappear">
-            <span class="add-food">加入购物车</span>
+          <div class="wrapper">
+            <span class="price">￥{{food.price}}</span>
+            <span class="old-price" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+            <div class="carnumber-wrapper" v-show=" food.num > 0">
+              <carnumber :food="food" @add="_add"></carnumber>
+            </div>
+            <transition name="disappear">
+              <div class="add-food-wrapper" @click="_addFoodToCart" v-show="food.num === 0 || !food.num">
+                <span class="add-food">加入购物车</span>
+              </div>
+            </transition>
           </div>
         </div>
-      </div>
-      <split v-show="food.info"></split>
-      <div class="food-info" v-show="food.info">
-        <h1>商品介绍</h1>
-        <div class="info">
-          {{food.info}}
+        <split v-show="food.info"></split>
+        <div class="food-info" v-show="food.info">
+          <h1>商品介绍</h1>
+          <div class="info">
+            {{food.info}}
+          </div>
         </div>
-      </div>
-      <split></split>
-      <div class="food-desc">
-        <h1 class="food-comment">商品评价</h1>
-        <div class="ratingselect-wrapper">
-          <ratingselect :desc="desc" :select-type="selectType" :rate-type="onlyContent" :ratings="food.ratings"></ratingselect>
+        <split></split>
+        <div class="food-desc">
+          <h1 class="food-comment">商品评价</h1>
+          <div class="ratingselect-wrapper">
+            <ratingselect @onlyContent="changeOnlyContent" @selectType="changeSelectType" :desc="desc" :select-type="selectType" :rate-type="onlyContent" :ratings="food.ratings"></ratingselect>
+          </div>
         </div>
+        <div class="rating-wrapper" v-show="food.ratings && food.ratings.length > 0">
+          <ul class="rating-content" >
+            <li class="rating-item border-1px" v-show="onlyContentRatings(rating.rateType, rating.text)" v-for="(rating, index) in food.ratings" :key="index">
+              <div class="user-info">
+                <span class="time">{{rating.rateTime | format}}</span><span class="username">{{rating.username}}</span><img class="avatar" width="12" height="12" :src="rating.avatar"/>
+              </div>
+              <div class="rating-info">
+                <span class="icon-thumb_up" v-show="rating.rateType === 0"></span>
+                <span class="icon-thumb_down" v-show="rating.rateType !== 0"></span>
+                <span class="rating">{{rating.text}}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="no-rating" v-show="!food.ratings || food.ratings.length === 0">暂无评价</div>
       </div>
-      <div class="rating-wrapper" v-show="food.ratings && food.ratings.length > 0">
-        <ul class="rating-content" >
-          <li class="rating-item border-1px" v-show="onlyContentRatings(rating.rateType, rating.text)" v-for="rating in food.ratings">
-            <div class="user-info">
-              <span class="time">{{rating.rateTime | format}}</span><span class="username">{{rating.username}}</span><img class="avatar" width="12" height="12" :src="rating.avatar"></img>
-            </div>
-            <div class="rating-info">
-              <span class="icon-thumb_up" v-show="rating.rateType === 0"></span>
-              <span class="icon-thumb_down" v-show="rating.rateType !== 0"></span>
-              <span class="rating">{{rating.text}}</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="no-rating" v-show="!food.ratings || food.ratings.length === 0">暂无评价</div>
     </div>
-  </div>
+  </transition>
 </template>
 <script>
   import BScroll from 'better-scroll';
@@ -93,7 +97,7 @@
         // 确保在dom视图更新完毕后初始化BScroll.
         this.$nextTick(() => {
           if (!this.foodWrapper) {
-            this.foodWrapper = new BScroll(this.$els.food, {
+            this.foodWrapper = new BScroll(this.$refs.food, {
               probeType: 3,
               click: true
             });
@@ -102,11 +106,14 @@
           }
         });
       },
+      _add (event) {
+        this.$emit('add', event);
+      },
       _addFoodToCart (event) {
-        this.$dispatch('cart_add', event.target);
         if (!this.food.num) {
           Vue.set(this.food, 'num', 1);
         }
+        this.$emit('add', event.target);
       },
       back () {
         this.isShow = false;
@@ -121,20 +128,18 @@
         } else if (this.selectType === 2) { // 选择了吐槽的时候
           return this.onlyContent ? ((type && text) ? 1 : 0) : (type ? 1 : 0);
         }
-      }
-    },
-    events: {
-      'ratingselect_onlyContent' (onlyContent) {
+      },
+      changeOnlyContent (onlyContent) {
         this.onlyContent = onlyContent;
         this.$nextTick(() => {
-          this.foodWrapper.refresh();
+          this.ratingsWrapper.refresh();
         });
       },
-      'ratingselect_selectType' (type) {
+      changeSelectType (type) {
         this.selectType = type;
         // 修改了selectType之后视图高度会发生变化，所以要重新刷新一次foodWrapper.
         this.$nextTick(() => {
-          this.foodWrapper.refresh();
+          this.ratingsWrapper.refresh();
         });
       }
     },
@@ -154,10 +159,10 @@
     width: 100%
     background: #fff
     z-index: 5
-    &.fade-transition
+    &.fade-enter-active, &.fade-leave-active
       transform: translate3d(0, 0, 0)
       transition: all 0.3s linear
-    &.fade-enter, &.fade-leave
+    &.fade-enter, &.fade-leave-active
       transform: translate3d(100%, 0, 0)
     .food-image
       position: relative
@@ -219,11 +224,11 @@
           position: absolute
           right: 0
           top: 0
-          &.disappear-transition
+          &.disappear-enter-active, &.&.disappear-leave-active
             transition: all 0.5s
-            opacity: 1
-          &.disappear-enter, &.disappear-leave
             opacity: 0
+          &.disappear-enter, &.disppear-leave-active
+            opacity: 1
           .add-food
             display: inline-block
             width: 74px
@@ -235,13 +240,11 @@
             text-align: center
             background: rgb(0, 160, 220)
             border-radius: 24px
-
     .food-info
        width: 100%
        padding: 18px
        box-sizing: border-box
        .info
-          height: 24px
           margin: 6px 8px 0 8px
           font-size: 12px
           font-weight: 200

@@ -1,10 +1,12 @@
 <template>
   <div class="carnumber">
     <span class="icon-add_circle" @click.stop="incNum"></span>
-    <div class="foodNum" v-show="food.num >= 1" transition="slide-fade">
-      <span class="inner icon-remove_circle_outline" @click.stop="decNum"></span>
-      <span class="num">{{food.num}}</span>
-    </div>
+    <transition name="slide-fade">
+      <div class="foodNum" v-show="food.num >= 1">
+        <span class="inner icon-remove_circle_outline" @click.stop="decNum"></span>
+        <span class="num">{{food.num}}</span>
+      </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -22,7 +24,8 @@
         } else {
           this.food.num++;
         }
-        this.$dispatch('cart_add', event.target); /* 通知父组件, 触发小球动画 */
+        console.log(this.food.num);
+        this.$emit('add', event.target); /* 通知父组件, 触发小球动画 */
       },
       decNum () {
         if (this.food.num <= 0) {
@@ -41,14 +44,14 @@
     float: right
     font-size: 0
     color: rgb(147, 153, 159)
-    &.slide-fade-transition
+    &.slide-fade-enter-active, &.slide-fade-leave-active
       transform: translate3d(0, 0, 0)
       transition: all 0.5s linear
       opacity: 1
       .inner
         transform: rotate(180deg)
         transition: all 0.5s linear
-    &.slide-fade-enter, &.slide-fade-leave
+    &.slide-fade-enter, &.slide-fade-leave-active
       transform: translate3d(24px, 0, 0)
       opacity: 0
       .inner

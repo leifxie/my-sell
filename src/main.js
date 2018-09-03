@@ -6,26 +6,23 @@ import goods from 'components/goods/goods';
 import ratings from 'components/ratings/ratings';
 import seller from 'components/seller/seller';
 import 'common/stylus/index.styl';
+import 'common/js/common.js';
 // 全局注册VueRouter和VueResource
 Vue.use(VueRouter);
 Vue.use(VueResource);
-let app = Vue.extend(App);
 
-let router = new VueRouter({
+const router = new VueRouter({
+  routes: [
+    {path: '/goods', component: goods},
+    {path: '/ratings', component: ratings},
+    {path: '/seller', component: seller}
+  ],
   linkActiveClass: 'active'
 });
 
-router.map({
-  '/goods': {
-    component: goods
-  },
-  '/ratings': {
-    component: ratings
-  },
-  'seller': {
-    component: seller
-  }
-});
-
-router.start(app, '#app');
 /* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router: router,
+  render: h => h(App)
+});

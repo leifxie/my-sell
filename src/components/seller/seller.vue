@@ -1,5 +1,5 @@
 <template>
-  <div class="seller" v-el:seller-wrapper>
+  <div class="seller" ref="sellerWrapper">
     <div class="seller-content">
       <div class="overview-top border-1px">
         <h1 class="name">{{seller.name}}</h1>
@@ -28,7 +28,7 @@
           <p class="bulletin">{{seller.bulletin}}</p>
         </div>
         <ul class="supports">
-          <li class="support border-1px" v-for="support in seller.supports">
+          <li class="support border-1px" v-for="(support,index) in seller.supports" :key="index">
             <span class="support-icon" :class="classMap[support.type]"></span>
             <span class="support-desc">{{support.description}}</span>
           </li>
@@ -37,9 +37,9 @@
       <split></split>
       <div class="seller-scene">
         <h1 class="scene-name">商家实景</h1>
-        <div class="scene-pics" v-el:pics-wrapper>
-          <ul class="pics-content" v-el:pics-content>
-            <li class="pics-item" v-for="pic in seller.pics" >
+        <div class="scene-pics" ref="picsWrapper">
+          <ul class="pics-content" ref="picsContent">
+            <li class="pics-item" v-for="(pic,index) in seller.pics" :key="index">
               <img :src="pic" alt="商家图片" width="120" height="90"/>
             </li>
           </ul>
@@ -49,14 +49,14 @@
       <div class="seller-info">
         <h1 class="info-name border-1px">商家信息</h1>
         <ul class="info-wrapper">
-          <li class="info-item border-1px" v-for="info in seller.infos">
+          <li class="info-item border-1px" v-for="(info, index) in seller.infos" :key="index">
             {{info}}
           </li>
         </ul>
       </div>
       <div class="collection-wrapper" @click.stop="toggleCollection">
         <span class="icon-favorite" :class="{'collected': isCollection}"></span>
-        <div class="collection-desc" v-el:collection-desc>{{favoriteText}}</div>
+        <div class="collection-desc" ref="collectionDesc">{{favoriteText}}</div>
       </div>
     </div>
   </div>
@@ -93,10 +93,10 @@
         this._initPicScroll();
       }
     },
-    ready () {
+    mounted () {
       this.$nextTick(() => {
         if (!this.scroll) {
-          this.scroll = new BScroll(this.$els.sellerWrapper, {
+          this.scroll = new BScroll(this.$refs.sellerWrapper, {
             click: true
           });
         } else {
@@ -108,7 +108,7 @@
     methods: {
       _initPicScroll () {
         if (this.seller.pics) {
-          let picsContent = this.$els.picsContent;
+          let picsContent = this.$refs.picsContent;
           let picWidth = 120;
           let margin = 6;
           // seller为什么为空，seller一开始初始化的时候是空的，是后面拿到数据之后再重新赋值
@@ -116,7 +116,7 @@
           this.$nextTick(() => {
             if (!this.picScroll) {
               // 要让better-scroll可以横向滚动，必须设置scrollX的值，一开始就是没有设置这个值，导致一直滚动不了。
-              this.picScroll = new BScroll(this.$els.picsWrapper, {
+              this.picScroll = new BScroll(this.$refs.picsWrapper, {
                 scrollX: true,
                 eventPassthrough: 'vertical'
               });
@@ -129,9 +129,9 @@
       toggleCollection () {
         this.isCollection = !this.isCollection;
         if (this.isCollection) {
-          this.$els.collectionDesc.textContent = '已收藏';
+          this.$refs.collectionDesc.textContent = '已收藏';
         } else {
-          this.$els.collectionDesc.textContent = '收藏';
+          this.$refs.collectionDesc.textContent = '收藏';
         }
         saveToLocal(this.seller.id, 'like', this.isCollection);
       }
@@ -147,7 +147,7 @@
   .seller
     position: fixed
     top: 174px
-    bottom: 18px
+    bottom: 0
     left: 0
     width: 100%
     overflow: hidden
@@ -240,15 +240,15 @@
             display: inline-block
             font-size: 24px
             line-height: 24px
-          .minute  
+          .minute
             display: inline-block
             font-size: 10px
             line-height: 24px
-      .notice 
+      .notice
         padding: 18px 18px 0 18px
         .notice-title
           margin-bottom: 8px
-        .notice-wrapper 
+        .notice-wrapper
           padding: 0 12px
           &.border-1px
             border-1px(rgba(7, 17, 27, 0.1))
@@ -274,7 +274,7 @@
             background-size: 16px 16px
             &.decrease
               bg-img('decrease_4')
-            &.discount  
+            &.discount
               bg-img('discount_4')
             &.guarantee
               bg-img('guarantee_4')
@@ -313,7 +313,7 @@
         .info-wrapper
           .info-item
             padding: 16px 12px
-            font-size: 12px 
+            font-size: 12px
             font-weight: 200
             color: rgb(7, 17, 27)
             line-height: 16px

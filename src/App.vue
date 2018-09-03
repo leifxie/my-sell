@@ -2,7 +2,9 @@
   <div>
     <v-header :seller="seller"></v-header>
     <v-tab ></v-tab>
-    <router-view :seller="seller"></router-view>
+    <keep-alive>
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
   </div>
 </template>
 

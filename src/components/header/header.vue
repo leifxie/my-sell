@@ -27,38 +27,40 @@
     <div class="background">
       <img :src="seller.avatar" width="100%" height="100%"/>
     </div>
-    <div v-show="detailShow" class="detail" >
-      <div class="detail-wrapper clearfix">
-        <div class="detail-content">
-          <h1 class="detail-title">{{seller.name}}</h1>
-          <div class="v-star">
-            <v-star :score="seller.score" :size="48"></v-star>
-          </div>
-          <div class="small-title">
-            <div class="line"></div>
-            <div class="text">优惠信息</div>
-            <div class="line"></div>
-          </div>
-          <ul v-if="seller.supports" class="supports">
-            <li v-for="item in classMap" class="support">
-              <span class="icon" :class="classMap[seller.supports[$index].type]"></span>
-              <span class="text">{{seller.supports[$index].description}}</span>
-            </li>
-          </ul>
-          <div class="small-title">
-            <div class="line"></div>
-            <div class="text">商家公告</div>
-            <div class="line"></div>
-          </div>
-          <div class="detail-bulletin">
-            {{seller.bulletin}}
+    <transition name="fade">
+      <div v-show="detailShow" class="detail" >
+        <div class="detail-wrapper clearfix">
+          <div class="detail-content">
+            <h1 class="detail-title">{{seller.name}}</h1>
+            <div class="v-star">
+              <star :score="seller.score" :size="48"></star>
+            </div>
+            <div class="small-title">
+              <div class="line"></div>
+              <div class="text">优惠信息</div>
+              <div class="line"></div>
+            </div>
+            <ul v-if="seller.supports" class="supports">
+              <li v-for="(item,index) in classMap" class="support" :key="index">
+                <span class="icon" :class="classMap[seller.supports[index].type]"></span>
+                <span class="text">{{seller.supports[index].description}}</span>
+              </li>
+            </ul>
+            <div class="small-title">
+              <div class="line"></div>
+              <div class="text">商家公告</div>
+              <div class="line"></div>
+            </div>
+            <div class="detail-bulletin">
+              {{seller.bulletin}}
+            </div>
           </div>
         </div>
+        <div class="detail-close" @click="closeDetailPage()">
+          <i class="icon-close"></i>
+        </div>
       </div>
-      <div class="detail-close" @click="closeDetailPage()">
-        <i class="icon-close"></i>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -86,7 +88,7 @@
       }
     },
     components: {
-      'v-star': star
+      star
     }
   };
 </script>
@@ -221,6 +223,11 @@
       height: 100%
       overflow: auto
       background-color:rgba(7, 17, 27, .8)
+      &.fade-enter-active, &.fade-leave-active
+        transition: all 0.6s
+        opacity: 1
+      &.fade-enter, &.fade-leave-to
+        opacity: 0
       .detail-wrapper
         min-height: 100%
         width: 100%
@@ -298,4 +305,3 @@
             font-size: 32px
             color: rgba(255, 255, 255, .5)
 </style>
-

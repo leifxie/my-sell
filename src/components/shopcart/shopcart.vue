@@ -9,33 +9,39 @@
             </div>
             <div class="count" v-show="totalCount > 0">{{totalCount}}</div>
           </div>
-          <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div><div class="description">另需配送费￥{{deliveryPrice}}元</div>
+          <div class="price" :class="{'highlight': totalPrice > 0}">￥{{totalPrice}}</div><div class="delivery-price">另需配送费￥{{deliveryPrice}}元</div>
         </div><div class="shopcart-right" :class="{'highlight': totalPrice >= minPrice}" @click.stop="pay">{{payStatus}}</div>
-        <div class="ball-wrapper">
-          <div transition="drop" class="ball" v-for="ball in balls" v-show="ball.show">
-            <div class="inner inner-hook"></div>
+        <div class="ball-wrapper" v-for="(ball,index) in balls" :key="index">
+          <transition name="drop" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+            <div class="ball"  v-show="ball.show" >
+              <div class="inner inner-hook"></div>
+            </div>
+          </transition>
+        </div>
+      </div>
+      <transition name="slide">
+        <div class="shopcart-list" v-show="listShow()">
+          <div class="list-header">
+            <span class="title">购物车</span>
+            <span class="reset" @click="reset">清空</span>
+          </div>
+          <div class="content-wrapper" ref="contentWrapper">
+              <ul class="list-content">
+                <li class="list-item" v-for="(food, index) in selectedFoods" :key="index">
+                  <span class="name">{{food.name}}</span>
+                  <span class="price">￥{{food.price * food.num}}</span>
+                  <div class="wrapper">
+                    <carnumber :food="food"></carnumber>
+                  </div>
+                </li>
+              </ul>
           </div>
         </div>
-      </div>
-      <div class="shopcart-list" v-show="listShow" transition="slide">
-        <div class="list-header">
-          <span class="title">购物车</span>
-          <span class="reset" @click="reset">清空</span>
-        </div>
-        <div class="content-wrapper" v-el:content-wrapper>
-          <ul class="list-content">
-            <li class="list-item" v-for="food in selectedFoods">
-              <span class="name">{{food.name}}</span>
-              <span class="price">￥{{food.price * food.num}}</span>
-              <div class="wrapper">
-                <carnumber :food="food"></carnumber>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+      </transition>
     </div>
-    <div class="shopcart-mask" v-show="listShow" @click="hideList" transition="fade"></div>
+    <transition name="fade">
+      <div class="shopcart-mask" @click="hideList" v-show="listShow()"></div>
+    </transition>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -94,26 +100,6 @@
         } else {
           return '去结算';
         }
-      },
-      listShow () {
-        let show = false;
-        if (!this.totalCount) {
-          this.fade = true; // fade=true表示列表折叠
-          return show;
-        }
-        show = !this.fade;
-        // 使用this.$nextTick确保dom视图更新后再初始化BScroll,否则容易计算错高度。
-        this.$nextTick(() => {
-          if (!this.contentWrapper) {
-            this.contentWrapper = new BScroll(this.$els.contentWrapper, {
-              probeType: 3,
-              click: true
-            });
-          } else {
-            this.contentWrapper.refresh();
-          }
-        });
-        return show;
       }
     },
     methods: {
@@ -146,44 +132,62 @@
         this.selectedFoods.forEach(function (food) {
           food.num = 0;
         });
-      }
-    },
-    transitions: {
-      drop: {
-        beforeEnter (el) {
-          let count = this.balls.length;
-          while (count--) {
-            let ball = this.balls[count];
-            if (ball.show) {
-              let rect = ball.el.getBoundingClientRect();
-              let x = rect.left - 40;
-              let y = -(window.innerHeight - rect.top - 22);
-              el.style.display = '';
-              el.style.webkitTransform = `translate3d(0,${y}px,0)`;
-              el.style.transform = `translate3d(0,${y}px,0)`;
-              let inner = el.getElementsByClassName('inner-hook')[0];
-              inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
-              inner.style.transform = `translate3d(${x}px,0,0)`;
-            }
+      },
+      listShow () {
+        // 计算属性内最好不要修改属性。
+        let show = false;
+        if (!this.totalCount) {
+          this.fade = true; // fade=true表示列表折叠
+          return show;
+        }
+        show = !this.fade;
+        // 使用this.$nextTick确保dom视图更新后再初始化BScroll,否则容易计算错高度。
+        this.$nextTick(() => {
+          if (!this.contentWrapper) {
+            this.contentWrapper = new BScroll(this.$refs.contentWrapper, {
+              probeType: 3,
+              click: true
+            });
+          } else {
+            this.contentWrapper.refresh();
           }
-        },
-        enter (el) {
-          /* eslint-disable no-unused-vars */
-          let rf = el.offsetHeight;
-          this.$nextTick(() => {
-            el.style.webkitTransform = 'translate3d(0,0,0)';
-            el.style.transform = 'translate3d(0,0,0)';
+        });
+        return show;
+      },
+      beforeEnter (el) {
+        let count = this.balls.length;
+        while (count--) {
+          let ball = this.balls[count];
+          if (ball.show) {
+            let rect = ball.el.getBoundingClientRect();
+            let x = rect.left - 40;
+            let y = -(window.innerHeight - rect.top - 22);
+            el.style.display = '';
+            el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+            el.style.transform = `translate3d(0,${y}px,0)`;
             let inner = el.getElementsByClassName('inner-hook')[0];
-            inner.style.webkitTransform = 'translate3d(0,0,0)';
-            inner.style.transform = 'translate3d(0,0,0)';
-          });
-        },
-        afterEnter (el) {
-          let ball = this.dropBalls.shift();
-          if (ball) {
-            ball.show = false;
-            el.style.display = 'none';
+            inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
+            inner.style.transform = `translate3d(${x}px,0,0)`;
           }
+        }
+      },
+      enter (el, done) {
+        /* eslint-disable no-unused-vars */
+        let rf = el.offsetHeight;
+        this.$nextTick(() => {
+          el.style.webkitTransform = 'translate3d(0,0,0)';
+          el.style.transform = 'translate3d(0,0,0)';
+          let inner = el.getElementsByClassName('inner-hook')[0];
+          inner.style.webkitTransform = 'translate3d(0,0,0)';
+          inner.style.transform = 'translate3d(0,0,0)';
+        });
+        el.addEventListener('transitionend', done);
+      },
+      afterEnter (el) {
+        let ball = this.dropBalls.shift();
+        if (ball) {
+          ball.show = false;
+          el.style.display = 'none';
         }
       }
     },
@@ -269,12 +273,13 @@
               height: 30px
               margin: 0 0 0 12px
               content: ''
-          .description
+          .delivery-price
             display: inline-block
             margin-top: 5.5px
             padding: 11px 0 12px 12px
             vertical-align: top
             color: #6c7177
+            font-size: 10px
         .shopcart-right
           flex: 0 0 105px
           text-align: center
@@ -291,7 +296,7 @@
             left: 40px
             bottom: 22px
             z-index: 500
-            &.drop-transition
+            &.drop-enter-active
               transition: all 0.4s cubic-bezier(.74,-0.58,.74,.55)
               .inner
                 width: 16px
@@ -308,7 +313,7 @@
         padding-bottom: 47px
         z-index: 13
         box-sizing: border-box
-        &.slide-transition
+        &.slide-enter-active, &,slide-leave-active
           transition: all 0.6s linear
           transform: translate3d(0, 0, 0)
         &.slide-enter, &.slide-leave
@@ -378,7 +383,7 @@
       background: rgba(7, 17, 27, 0.6)
       filter: blur(10px)
       transform: scale(1.2);
-      &.fade-transition
+      &.fade-enter-active, &.fade-leave-active
         transition: all 0.5s linear
         opacity: 1
       &.fade-enter, &.fade-leave

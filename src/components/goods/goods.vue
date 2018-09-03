@@ -1,10 +1,10 @@
 <template>
   <div class="goods">
     <div class="goods-wrapper">
-      <div class="menu-wrapper" v-el:menu-wrapper>
+      <div class="menu-wrapper" ref="menuWrapper">
         <ul class="menu">
-          <li v-for="item in goods" track-by="$index" class="menu-item" :class="{ scrollActive: scrollIndex === $index}"
-          @click="showFoods($index)">
+          <li v-for="(item,index) in goods" :key="index" class="menu-item" :class="{ scrollActive: scrollIndex === index}"
+          @click="showFoods(index)">
             <span class="text">
               <span v-if="item.type >= 0" :class="classMap[item.type]" class="icon"></span>
             {{item.name}}
@@ -12,12 +12,12 @@
           </li>
         </ul>
       </div>
-      <div class="foods-wrapper" v-el:foods-wrapper>
+      <div class="foods-wrapper" ref="foodsWrapper">
         <ul>
-          <li v-for="item in goods" class="foods-item food-item-hook">
+          <li v-for="(item, index) in goods" class="foods-item food-item-hook" :key="index">
             <h1 class="title">{{item.name}}</h1>
             <ul>
-              <li class="item-foods" v-for="food in item.foods" @click.stop.prevent="selectFood(food, $event)">
+              <li class="item-foods" v-for="(food, index) in item.foods" @click.stop.prevent="selectFood(food, $event)" :key="index">
                 <div class="icon-wrapper">
                   <img :src="food.icon" class="icon" width="60" height="60"/>
                 </div>
@@ -33,7 +33,7 @@
                     <span class="price">￥{{food.price}}</span>
                     <span class="oldPrice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                     <div class="carnumber">
-                      <carnumber :food="food"></carnumber>
+                      <carnumber :food="food" @add="_drop"></carnumber>
                     </div>
                   </div>
                 </div>
@@ -42,9 +42,9 @@
           </li>
         </ul>
       </div>
-      <shopcart v-ref:shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :selected-foods="selectedFoods"></shopcart>
+      <shopcart ref="shopcart" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :selected-foods="selectedFoods"></shopcart>
     </div>
-    <food :food="foodDetail" v-ref:food></food>
+    <food :food="foodDetail" ref="food" @add="_drop"></food>
   </div>
 
 </template>
@@ -76,7 +76,7 @@
         for (let i = 0; i < scrollHeights.length; i++) {
           let startHeight = scrollHeights[i];
           let endHeight = scrollHeights[i + 1];
-          if (!endHeight || this.scrollY >= startHeight && this.scrollY < endHeight) {
+          if (!endHeight || (this.scrollY >= startHeight && this.scrollY < endHeight)) {
             return i;
           }
         }
@@ -109,11 +109,11 @@
     },
     methods: {
       initScroll () {
-        this.menuScroll = new BScroll(this.$els.menuWrapper, {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {
           probeType: 3,
           click: true
         });
-        this.foodsScroll = new BScroll(this.$els.foodsWrapper, {
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
           probeType: 3,
           click: true
         });
@@ -124,14 +124,14 @@
       calculateHeight () {
         let height = 0;
         this.scrollHeights.push(height);
-        let foodsList = this.$els.foodsWrapper.querySelectorAll('.food-item-hook');
+        let foodsList = this.$refs.foodsWrapper.querySelectorAll('.food-item-hook');
         for (let i = 0; i < foodsList.length; i++) {
           height += foodsList[i].clientHeight;
           this.scrollHeights.push(height);
         }
       },
       showFoods (index) {
-        let foodsList = this.$els.foodsWrapper.querySelectorAll('.food-item-hook');
+        let foodsList = this.$refs.foodsWrapper.querySelectorAll('.food-item-hook');
         let $el = foodsList[index];
         this.foodsScroll.scrollToElement($el, 250);
       },
@@ -150,11 +150,6 @@
       shopcart,
       carnumber,
       food
-    },
-    events: {
-      'cart_add' (target) {
-        this._drop(target);
-      }
     }
   };
 </script>

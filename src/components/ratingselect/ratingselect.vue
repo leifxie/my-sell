@@ -6,7 +6,7 @@
       <span class="negative" :class="{'active': selectType === 2}" @click.stop="chooseType(2)">{{desc.negative}}<span class="num">{{negative.length}}</span></span>
     </div>
     <div class="switch">
-      <span class="icon-check_circle" :class="{'on': onlyContent}" @click.stop="choose"></span>
+      <span class="icon-check_circle" :class="{'on': isOn}" @click.stop="choose"></span>
       <span class="desc" >只看有内容的评价</span>
     </div>
   </div>
@@ -40,6 +40,11 @@
         }
       }
     },
+    data () {
+      return {
+        isOn: false
+      };
+    },
     computed: {
       positive () {
         return this.ratings.filter((item) => {
@@ -54,13 +59,13 @@
     },
     methods: {
       choose () {
-        this.onlyContent = !this.onlyContent;
         // 通知父组件子组件的属性发生变化
-        this.$dispatch('ratingselect_onlyContent', this.onlyContent);
+        this.isOn = !this.isOn;
+        this.$emit('onlyContent', this.isOn);
       },
       chooseType (type) {
-        this.selectType = type;
-        this.$dispatch(('ratingselect_selectType'), type);
+        // this.selectType = type;
+        this.$emit('selectType', type);
       }
     }
   };
