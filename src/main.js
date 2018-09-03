@@ -26,3 +26,5 @@ new Vue({
   router: router,
   render: h => h(App)
 });
+
+router.push({path: '/goods'});
