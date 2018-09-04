@@ -21,4 +21,4 @@ npm run build --report
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 ## 访问二维码如下
-https://github.com/XTale/my-sell/blob/master/访问二维码.png
+!(https://github.com/liuhuakun/BrushShots/blob/master/1.PNG)
